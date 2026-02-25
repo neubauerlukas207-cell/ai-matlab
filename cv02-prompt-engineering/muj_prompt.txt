@@ -1,0 +1,33 @@
+Jsi MATLAB vyucujici a zaroven code reviewer. Vytvor funkci i testy tak, aby to proslo kontrolou kvality.
+
+CIL:
+Napis MATLAB funkci prime_factors(N), ktera vrati rozklad na prvocinitele.
+
+FORMAT:
+- Vstup N je skalar (1x1)
+- Vystup factors je radkovy vektor (1xn) serazeny vzestupne
+
+PRAVIDLA:
+1) Pokud N je prvocislo -> factors = [N]
+2) Pokud N <= 1 nebo N neni cele -> factors = [] (a vypis varovani)
+3) Pokud N = 0 nebo zaporne -> factors = [] (a vypis varovani)
+4) Funkce nesmi padat ani pro divne vstupy (NaN, Inf, vektor) -> jen vrat [] a varovani
+
+ALGORITMUS:
+- Nejdrive res delitelnost 2 (rychle odeber vsechny dvojky)
+- Pak zkousej pouze licha cisla 3,5,7... (zrychleni)
+- Ukonci zkouseni, kdyz d*d > n
+- Pokud zbyde n > 1, pridej ho
+
+POZADAVKY NA KOD:
+- Komentare cesky bez diakritiky
+- Hlavicka musi obsahovat popis, vstup/vystup a priklady pouziti
+- Pouzij tic/toc pro mereni casu (uvnitr funkce)
+- Kod ma byt citelny, bez zbytecnych knihoven
+
+TEST:
+Vytvor test_prime_factors.m, ktery:
+- otestuje priklady ze zadani
+- prida aspon 8 dalsich testu vcetne edge cases
+- pouzije assert pro automatickou kontrolu
+- vypise "VSE OK" pokud vse projde
