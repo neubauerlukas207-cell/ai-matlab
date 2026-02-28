@@ -1,0 +1,16 @@
+Název agenta: „Pravotočivý okrajový průzkumník s anti-loop“
+
+Pravidla (IF-THEN):
+1) IF vidím smetí THEN VYSAJ
+2) IF předem stěna THEN otoč se vpravo
+3) IF jsem 2× po sobě narazil na stěnu (tzn. zaseklé místo/roh) THEN otoč se vlevo
+4) ELSE pohni se dopředu
+
+Zdůvodnění:
+- Základ je reaktivní (rychlé rozhodování).
+- Pravotočivý pohyb dává smysluplný „systematický“ průchod po světě (často obchází okraje).
+- Anti-loop pravidlo snižuje kroužení v rozích a zbytečné otáčení.
+
+Slabiny:
+- Nemá paměť mapy, takže není optimální.
+- U některých konfigurací může zůstat v cyklu, jen méně často než úplný default.

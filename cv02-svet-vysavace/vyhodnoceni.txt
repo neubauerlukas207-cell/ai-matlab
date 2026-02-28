@@ -1,0 +1,18 @@
+Vyhodnoceni simulace agenta-vysavace
+
+Parametry:
+- Svet: 10x10
+- Pocatecni znecisteni: 40 %
+- Ukonceni: cisto nebo max 200 pohybu dopredu
+
+Vysledky:
+- Cistota: 78.0 %
+- Kroky dopredu: 200
+- Otocky: 23
+- Pocet vysati: 16
+- Efektivita (vysati/(dopredu+otocky)): 0.072
+
+Komentar:
+- Agent je reaktivni: vysaje pri nalezeni smeti, na stenu reaguje otacenim.
+- Ma jednoduchou pamet (anti-loop) proti toceni v rozich.
+- Slabina: nema mapu sveta, muze se vratit na stejna mista.
