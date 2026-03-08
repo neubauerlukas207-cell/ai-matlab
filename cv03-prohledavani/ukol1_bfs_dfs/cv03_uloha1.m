@@ -1,129 +1,163 @@
+%% cv03_uloha1.m
+% Ukol 1: Prohledavani bludiste – BFS vs DFS
+% Vygeneruje 100 PRUCHOZICH bludist 20x20 s 15% prekazek,
+% spusti BFS a DFS, vypise statistiky a ulozi grafy do slozky /vysledky.
+
 clear; clc; close all;
 
+%% Nastaveni
 n = 20;
-hustota = 0.15;
-start = [1 1];
-cil   = [n n];
-pocet = 100;
+hustota = 15;
+pocet_bludist = 100;
 
-if ~exist("vysledky","dir")
-    mkdir("vysledky");
+start = [1, 1];
+cil   = [n, n];
+
+vysledky_dir = fullfile(pwd, 'vysledky');
+if ~exist(vysledky_dir, 'dir')
+    mkdir(vysledky_dir);
 end
 
-delky_BFS = zeros(pocet,1);
-delky_DFS = zeros(pocet,1);
-uzly_BFS  = zeros(pocet,1);
-uzly_DFS  = zeros(pocet,1);
+%% 1) Vygeneruj 100 pruchozich bludist
+bludiste_list = cell(pocet_bludist, 1);
 
-bludiste_list = cell(pocet,1);
-cesty_BFS = cell(pocet,1);
-cesty_DFS = cell(pocet,1);
-nav_BFS   = cell(pocet,1);
-nav_DFS   = cell(pocet,1);
+fprintf('Generuji %d pruchozich bludist %dx%d s hustotou %g%% ...\n', pocet_bludist, n, n, hustota);
 
 i = 1;
 pokusy = 0;
-
-while i <= pocet
+while i <= pocet_bludist
     pokusy = pokusy + 1;
+    B = generuj_bludiste(n, hustota);
 
-    bl = generuj_bludiste(n, hustota);
+    % Over pruchodnost (BFS jako nejjednodussi test)
+    [cesta_b, ~, ~] = bfs(B, start, cil);
 
-    [cB, kB, vB] = bfs(bl, start, cil);
-    if isempty(cB)
-        continue
+    if ~isempty(cesta_b)
+        bludiste_list{i} = B;
+        i = i + 1;
     end
-
-    [cD, kD, vD] = dfs(bl, start, cil);
-    if isempty(cD)
-        continue
-    end
-
-    bludiste_list{i} = bl;
-    cesty_BFS{i} = cB;
-    cesty_DFS{i} = cD;
-    nav_BFS{i} = vB;
-    nav_DFS{i} = vD;
-
-    delky_BFS(i) = size(cB,1);
-    delky_DFS(i) = size(cD,1);
-    uzly_BFS(i)  = kB;
-    uzly_DFS(i)  = kD;
-
-    i = i + 1;
 end
 
-% --- STATISTIKY ---
-fprintf("STATISTIKY\n\n");
+fprintf('Hotovo. Celkem pokusu: %d (nepruchozich zahozena: %d)\n\n', pokusy, pokusy - pocet_bludist);
 
-fprintf("BFS delka cesty: prumer %.2f | min %d | max %d\n", mean(delky_BFS), min(delky_BFS), max(delky_BFS));
-fprintf("DFS delka cesty: prumer %.2f | min %d | max %d\n\n", mean(delky_DFS), min(delky_DFS), max(delky_DFS));
+%% 2) Spust BFS a DFS na kazdem bludisti
+len_bfs = zeros(pocet_bludist, 1);
+len_dfs = zeros(pocet_bludist, 1);
+steps_bfs = zeros(pocet_bludist, 1);
+steps_dfs = zeros(pocet_bludist, 1);
 
-fprintf("BFS kroky:       prumer %.2f | min %d | max %d\n", mean(uzly_BFS), min(uzly_BFS), max(uzly_BFS));
-fprintf("DFS kroky:       prumer %.2f | min %d | max %d\n\n", mean(uzly_DFS), min(uzly_DFS), max(uzly_DFS));
+paths_bfs = cell(pocet_bludist, 1);
+paths_dfs = cell(pocet_bludist, 1);
+visited_bfs = cell(pocet_bludist, 1);
+visited_dfs = cell(pocet_bludist, 1);
 
-fprintf("DFS naslo delsi cestu nez BFS v %d z %d pripadu.\n", sum(delky_DFS > delky_BFS), pocet);
-fprintf("Pokusy o generovani celkem: %d\n", pokusy);
+for k = 1:pocet_bludist
+    B = bludiste_list{k};
 
-% --- GRAF: prvnich 5 ---
-k = 5;
-figure("Color","w");
+    [p_b, s_b, v_b] = bfs(B, start, cil);
+    [p_d, s_d, v_d] = dfs(B, start, cil);
 
-subplot(2,1,1);
-bar([delky_BFS(1:k) delky_DFS(1:k)]);
-grid on;
-title("Porovnani delky cesty (prvnich 5)");
-xlabel("Bludiste (1..5)");
-ylabel("Delka cesty");
-legend("BFS","DFS","Location","northwest");
+    paths_bfs{k} = p_b; visited_bfs{k} = v_b;
+    paths_dfs{k} = p_d; visited_dfs{k} = v_d;
 
-subplot(2,1,2);
-bar([uzly_BFS(1:k) uzly_DFS(1:k)]);
-grid on;
-title("Porovnani poctu kroku (prvnich 5)");
-xlabel("Bludiste (1..5)");
-ylabel("Kroky");
-legend("BFS","DFS","Location","northwest");
+    len_bfs(k) = size(p_b, 1);
+    len_dfs(k) = size(p_d, 1);
+    steps_bfs(k) = s_b;
+    steps_dfs(k) = s_d;
+end
 
-saveas(gcf, fullfile("vysledky","porovnani_5_bludist.png"));
+%% 3) Textove statistiky
+fprintf('=== STATISTIKY PRO %d PRUCHOZICH BLUDIST ===\n', pocet_bludist);
 
-% --- VIZUALIZACE: jedno bludiste BFS vs DFS (barvy + navstivene) ---
-idx = 1;
-bl = bludiste_list{idx};
-cB = cesty_BFS{idx}; vB = nav_BFS{idx};
-cD = cesty_DFS{idx}; vD = nav_DFS{idx};
+fprintf('\nDelka cesty (pocet bodu v ceste):\n');
+fprintf('  BFS: prumer = %.2f, min = %d, max = %d\n', mean(len_bfs), min(len_bfs), max(len_bfs));
+fprintf('  DFS: prumer = %.2f, min = %d, max = %d\n', mean(len_dfs), min(len_dfs), max(len_dfs));
 
-A = zeros(n,n); % BFS obraz
-B = zeros(n,n); % DFS obraz
+fprintf('\nPocet prozkoumanych uzlu (kroku algoritmu):\n');
+fprintf('  BFS: prumer = %.2f, min = %d, max = %d\n', mean(steps_bfs), min(steps_bfs), max(steps_bfs));
+fprintf('  DFS: prumer = %.2f, min = %d, max = %d\n', mean(steps_dfs), min(steps_dfs), max(steps_dfs));
 
-% 0 volno, 1 prekazka, 2 navstivene, 3 cesta, 4 start, 5 cil
-A(bl==1) = 1;   B(bl==1) = 1;
-A(vB) = 2;      B(vD) = 2;
+kolik_dfs_delsi = sum(len_dfs > len_bfs);
+fprintf('\nDFS naslo delsi cestu nez BFS v %d pripadech z %d.\n', kolik_dfs_delsi, pocet_bludist);
 
-A(sub2ind([n n], cB(:,1), cB(:,2))) = 3;
-B(sub2ind([n n], cD(:,1), cD(:,2))) = 3;
+%% 4) Vizualizace
+% 4.1) Sloupcovy graf pro prvnich 5 bludist
+idx = 1:5;
 
-A(start(1),start(2)) = 4;  B(start(1),start(2)) = 4;
-A(cil(1),cil(2))     = 5;  B(cil(1),cil(2))     = 5;
-
-cmap = [
-    1 1 1;         % 0 volno
-    0 0 0;         % 1 prekazka
-    0.7 0.7 0.7;   % 2 navstivene
-    0 0 1;         % 3 cesta
-    0 1 0;         % 4 start
-    1 0 0          % 5 cil
-];
-
-figure("Color","w");
+figure('Name', 'Porovnani 5 bludist');
 subplot(1,2,1);
-imagesc(A); axis image off; colormap(gca, cmap); caxis([0 5]);
-title("BFS (vlevo)");
+bar([len_bfs(idx), len_dfs(idx)]);
+xlabel('Bludiste #'); ylabel('Delka cesty (pocet bodu)');
+legend({'BFS','DFS'}, 'Location','best');
+title('Delka cesty');
 
 subplot(1,2,2);
-imagesc(B); axis image off; colormap(gca, cmap); caxis([0 5]);
-title("DFS (vpravo)");
+bar([steps_bfs(idx), steps_dfs(idx)]);
+xlabel('Bludiste #'); ylabel('Pocet prozkoumanych uzlu');
+legend({'BFS','DFS'}, 'Location','best');
+title('Prozkoumane uzly');
 
-saveas(gcf, fullfile("vysledky","bludiste_bfs_vs_dfs.png"));
+saveas(gcf, fullfile(vysledky_dir, 'porovnani_5_bludist.png'));
 
-fprintf("\nUlozeno do slozky: vysledky\n");
+% 4.2) Vizualizace jednoho bludiste (1. bludiste)
+B = bludiste_list{1};
+p_b = paths_bfs{1}; v_b = visited_bfs{1};
+p_d = paths_dfs{1}; v_d = visited_dfs{1};
+
+figure('Name', 'Bludiste BFS vs DFS', 'Position', [100 100 1100 500]);
+
+subplot(1,2,1);
+vykresli_bludiste(B, start, cil, p_b, v_b);
+title('BFS');
+
+subplot(1,2,2);
+vykresli_bludiste(B, start, cil, p_d, v_d);
+title('DFS');
+
+saveas(gcf, fullfile(vysledky_dir, 'bludiste_bfs_vs_dfs.png'));
+
+fprintf('\nUlozene obrazky:\n  %s\n  %s\n', ...
+    fullfile('vysledky', 'porovnani_5_bludist.png'), ...
+    fullfile('vysledky', 'bludiste_bfs_vs_dfs.png'));
+
+%% --- LOKALNI FUNKCE ---
+function vykresli_bludiste(B, start, cil, cesta, navstivene)
+    % Barvy:
+    % bílá = volno, černá = překážka
+    % šedá = prozkoumané uzly, modrá = cesta
+    % zelená = start, červená = cíl
+
+    n = size(B,1);
+
+    img = zeros(n,n,3);
+    for r=1:n
+        for c=1:n
+            if B(r,c) == 1
+                img(r,c,:) = 0;   % cerna
+            else
+                img(r,c,:) = 1;   % bila
+            end
+        end
+    end
+
+    % Navstivene uzly (seda) jen na volnych polich
+    [vr, vc] = find(navstivene & (B==0));
+    for i=1:numel(vr)
+        img(vr(i), vc(i), :) = 0.7;
+    end
+
+    % Cesta (modra)
+    for i=1:size(cesta,1)
+        r = cesta(i,1); c = cesta(i,2);
+        img(r,c,1) = 0.1; img(r,c,2) = 0.3; img(r,c,3) = 1.0;
+    end
+
+    % Start (zelena)
+    img(start(1), start(2), :) = reshape([0.1 0.9 0.1],1,1,3);
+
+    % Cil (cervena)
+    img(cil(1), cil(2), :) = reshape([0.95 0.1 0.1],1,1,3);
+
+    image(img);
+    axis image off;
+end

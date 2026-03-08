@@ -1,81 +1,88 @@
 function [cesta, pocet_kroku, navstivene] = dfs(bludiste, start, cil)
+%DFS Prohledavani do hloubky (Depth-First Search) na mrizce.
+%   Pouziva zasobnik (LIFO), vraci nalezenou cestu (nemusi byt nejkratsi).
+%
+%   Vystup:
+%     cesta       - Kx2 souradnice (vcetne start a cil), [] pokud nenalezena
+%     pocet_kroku - pocet expandovanych uzlu
+%     navstivene  - logicka matice n x n
 
-[n,m] = size(bludiste);
-navstivene = false(n,m);
-pocet_kroku = 0;
-cesta = [];
+    n = size(bludiste, 1);
+    navstivene = false(n, n);
+    pocet_kroku = 0;
 
-if bludiste(start(1),start(2)) == 1 || bludiste(cil(1),cil(2)) == 1
-    return;
-end
-
-parent = zeros(n,m,2);
-
-stack = zeros(n*m,2);
-top = 1;
-stack(top,:) = start;
-
-navstivene(start(1),start(2)) = true;
-
-% POŘADÍ SMĚRŮ (bias k cíli): dolů, doprava, doleva, nahoru
-dirs = [ 1 0; 0 1; 0 -1; -1 0 ];
-
-found = false;
-
-while top > 0
-    cur = stack(top,:); top = top - 1;
-    r = cur(1); c = cur(2);
-    pocet_kroku = pocet_kroku + 1;
-
-    if r == cil(1) && c == cil(2)
-        found = true;
-        break;
-    end
-
-    % push v opačném pořadí kvůli LIFO
-    for i = 4:-1:1
-        rr = r + dirs(i,1);
-        cc = c + dirs(i,2);
-
-        if rr < 1 || rr > n || cc < 1 || cc > m
-            continue;
-        end
-        if bludiste(rr,cc) == 1
-            continue;
-        end
-        if navstivene(rr,cc)
-            continue;
-        end
-
-        navstivene(rr,cc) = true;
-        parent(rr,cc,1) = r;
-        parent(rr,cc,2) = c;
-
-        top = top + 1;
-        stack(top,:) = [rr cc];
-    end
-end
-
-if ~found
-    return;
-end
-
-% rekonstrukce cesty
-r = cil(1); c = cil(2);
-path = [r c];
-
-while ~(r == start(1) && c == start(2))
-    pr = parent(r,c,1);
-    pc = parent(r,c,2);
-
-    if pr == 0 && pc == 0
+    if bludiste(start(1), start(2)) == 1 || bludiste(cil(1), cil(2)) == 1
         cesta = [];
         return;
     end
 
-    r = pr; c = pc;
-    path = [r c; path]; %#ok<AGROW>
-end
+    % Zasobnik (LIFO)
+    stack = zeros(n*n, 2);
+    top = 1;
+    stack(top,:) = start;
 
-cesta = path;
+    % Predchudci
+    prev_r = zeros(n, n);
+    prev_c = zeros(n, n);
+
+    navstivene(start(1), start(2)) = true;
+    prev_r(start(1), start(2)) = -1;
+    prev_c(start(1), start(2)) = -1;
+
+    moves = [-1 0; 1 0; 0 -1; 0 1]; % 4-sousedstvi
+    found = false;
+
+    while top >= 1
+        u = stack(top,:);
+        top = top - 1;
+
+        pocet_kroku = pocet_kroku + 1;
+
+        if u(1) == cil(1) && u(2) == cil(2)
+            found = true;
+            break;
+        end
+
+        % Poradi sousedu (deterministicke):
+        for k = 1:4
+            v = u + moves(k,:);
+            r = v(1); c = v(2);
+
+            if r >= 1 && r <= n && c >= 1 && c <= n
+                if ~navstivene(r,c) && bludiste(r,c) == 0
+                    top = top + 1;
+                    stack(top,:) = [r,c];
+                    navstivene(r,c) = true;
+
+                    prev_r(r,c) = u(1);
+                    prev_c(r,c) = u(2);
+                end
+            end
+        end
+    end
+
+    if ~found
+        cesta = [];
+        return;
+    end
+
+    % Rekonstrukce cesty
+    cesta_rev = zeros(n*n, 2);
+    idx = 1;
+    cur = cil;
+    while true
+        cesta_rev(idx,:) = cur;
+        idx = idx + 1;
+
+        pr = prev_r(cur(1), cur(2));
+        pc = prev_c(cur(1), cur(2));
+
+        if pr == -1 && pc == -1
+            break;
+        end
+        cur = [pr, pc];
+    end
+
+    cesta_rev = cesta_rev(1:idx-1, :);
+    cesta = flipud(cesta_rev);
 end
