@@ -97,7 +97,6 @@ function vykresli_mapu_prehledne(mesta, adj, h, pozice, start, cil, cesta_dijkst
                 mx = (pozice(i,1) + pozice(j,1)) / 2;
                 my = (pozice(i,2) + pozice(j,2)) / 2;
 
-                % automaticky posun popisku podle smeru hrany
                 dx = pozice(j,1) - pozice(i,1);
                 dy = pozice(j,2) - pozice(i,2);
                 delka = sqrt(dx^2 + dy^2);
@@ -109,11 +108,10 @@ function vykresli_mapu_prehledne(mesta, adj, h, pozice, start, cil, cesta_dijkst
                     nx = -dy / delka;
                     ny =  dx / delka;
 
-                    % zakladni posun od hrany
                     ox = 0.28 * nx;
                     oy = 0.28 * ny;
 
-                    % jemne doladeni pro diagonalni hrany vlevo/vpravo
+                    % obecne jemne doladeni
                     if dx > 0 && dy < 0
                         ox = ox - 0.18;
                         oy = oy - 0.10;
@@ -121,6 +119,18 @@ function vykresli_mapu_prehledne(mesta, adj, h, pozice, start, cil, cesta_dijkst
                         ox = ox - 0.12;
                         oy = oy + 0.05;
                     end
+                end
+
+                % specialni rucni oprava pro Alpov -> Cedrov (95 km)
+                if i == 1 && j == 3
+                    ox = 0.55;
+                    oy = -0.10;
+                end
+
+                % specialni rucni oprava pro Grunov -> Hradec (140 km)
+                if i == 6 && j == 8
+                    ox = -0.15;
+                    oy = 0.10;
                 end
 
                 text(mx + ox, my + oy, sprintf('%d km', adj(i,j)), ...
