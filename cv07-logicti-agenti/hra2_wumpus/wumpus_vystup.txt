@@ -1,0 +1,35 @@
+HRAC: pozice=[1,1] | zapach=0 vanek=0 lesk=0
+HRAC: pozice=[1,2] | zapach=0 vanek=1 lesk=0
+HRAC: pozice=[1,3] | zapach=0 vanek=0 lesk=0
+HRAC: pozice=[1,4] | zapach=0 vanek=0 lesk=0
+HRAC: pozice=[2,4] | zapach=0 vanek=0 lesk=0
+HRAC: pozice=[3,4] | zapach=0 vanek=0 lesk=0
+HRAC: pozice=[4,4] | zapach=0 vanek=1 lesk=0
+HRAC: pozice=[4,5] | zapach=0 vanek=0 lesk=0
+HRAC: pozice=[5,5] | zapach=0 vanek=0 lesk=1
+HRAC: sebral zlato
+HRAC: pozice=[5,5] | zapach=0 vanek=0 lesk=0
+HRAC: pozice=[4,5] | zapach=0 vanek=0 lesk=0
+HRAC: pozice=[4,4] | zapach=0 vanek=1 lesk=0
+HRAC: pozice=[3,4] | zapach=0 vanek=0 lesk=0
+HRAC: pozice=[2,4] | zapach=0 vanek=0 lesk=0
+HRAC: pozice=[1,4] | zapach=0 vanek=0 lesk=0
+HRAC: pozice=[1,4] | zapach=0 vanek=0 lesk=0
+HRAC: pozice=[1,3] | zapach=0 vanek=0 lesk=0
+HRAC: pozice=[1,2] | zapach=0 vanek=1 lesk=0
+HRAC: pozice=[1,1] | zapach=0 vanek=0 lesk=0
+AGENT: pozice=[1,1] | zapach=0 vanek=0 lesk=0
+AGENT: pozice=[2,1] | zapach=0 vanek=1 lesk=0
+AGENT: pozice=[3,1] | zapach=0 vanek=1 lesk=0
+AGENT: pozice=[4,1] | zapach=1 vanek=0 lesk=0
+
+===============================================================
+POROVNANI: HRAC vs. AGENT
+===============================================================
+|                    | Hrac                 | Agent                |
+---------------------------------------------------------------
+| Pocet kroku        | 18                   | 4                    |
+| Cas (s)            | 6.11                 | 2.41                 |
+| Vysledek           | Vyhra                | Sezral ho Wumpus     |
+| Prozkoumano poli   | 9                    | 4                    |
+===============================================================

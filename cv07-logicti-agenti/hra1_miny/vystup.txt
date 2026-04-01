@@ -1,0 +1,44 @@
+
+============================================
+POROVNANI: HRAC vs. AGENT
+============================================
+| Pocet tahu       |      1 |     17 |
+| Cas (s)          |   5.94 |   0.16 |
+| Vysledek         | Prohra | Prohra |
+| Flood-fill       |      0 |     68 |
+============================================
+
+============================================
+POROVNANI: HRAC vs. AGENT
+============================================
+| Pocet tahu       |     25 |      1 |
+| Cas (s)          |  92.10 |   0.01 |
+| Vysledek         | Prohra | Prohra |
+| Flood-fill       |     53 |      0 |
+============================================
+Tah 1: odkryto [2,3], hodnota=1
+Tah 2: odkryto [2,7], hodnota=1
+Tah 3: odkryto [3,7], hodnota=1
+Tah 4: prepnuta vlajka na [5,5]
+Tah 5: odkryto [5,3], hodnota=1
+Tah 6: prepnuta vlajka na [7,2]
+Tah 7: odkryto [7,7], hodnota=1
+Tah 8: odkryto [6,8], hodnota=1
+Tah 9: odkryto [4,8], hodnota=0
+Tah 10: odkryto [1,5], hodnota=1
+Tah 11: odkryto [1,2], hodnota=0
+Tah 12: odkryto [7,4], hodnota=1
+Tah 13: odkryto [7,5], hodnota=2
+Tah 14: odkryto [7,8], hodnota=1
+Tah 15: odkryta mina na [7,9]
+
+=== AGENT ===
+
+============================================
+POROVNANI: HRAC vs. AGENT
+============================================
+| Pocet tahu       |     15 |      1 |
+| Cas (s)          |  19.36 |   0.00 |
+| Vysledek         | Prohra | Prohra |
+| Flood-fill       |     44 |      0 |
+============================================
