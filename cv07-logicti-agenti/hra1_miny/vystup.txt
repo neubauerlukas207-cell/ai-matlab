@@ -42,3 +42,199 @@ POROVNANI: HRAC vs. AGENT
 | Vysledek         | Prohra | Prohra |
 | Flood-fill       |     44 |      0 |
 ============================================
+=== FAZE HRACE ===
+Tah 1: odkryto [2,3], hodnota=1
+Tah 2: odkryta mina na [5,7]
+[Warning: Exported image displays axes toolbar. To remove axes toolbar from image, export again.] 
+[Warning: Exported image displays axes toolbar. To remove axes toolbar from image, export again.] 
+
+=== FAZE AGENTA ===
+Agent tah 1: nahodny start [3,4]
+{Operation terminated by user during <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('miny_agent', 'C:\cv07\hra1_miny\miny_agent.m', 56)" style="font-weight:bold">miny_agent</a> (<a href="matlab: opentoline('C:\cv07\hra1_miny\miny_agent.m',56,0)">line 56</a>)
+
+
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('miny_hra', 'C:\cv07\hra1_miny\miny_hra.m', 137)" style="font-weight:bold">miny_hra</a> (<a href="matlab: opentoline('C:\cv07\hra1_miny\miny_hra.m',137,0)">line 137</a>)
+    [bezpecna, miny_nalezene] = miny_agent(minyA);
+                                ^^^^^^^^^^^^^^^^^
+} 
+{Operation terminated by user during matlab.graphics.controls.AxesToolbar/setToolbarAnchorPosition>localGetCanvasContainingAncestor
+
+
+In matlab.graphics.controls.AxesToolbar/setToolbarAnchorPosition
+
+In matlab.graphics.controls.AxesToolbar/setPosition
+
+In matlab.graphics.interaction.graphicscontrol.AxesToolbarControl/process
+
+In matlab.graphics.interaction.graphicscontrol.ControlManager/processMessage
+} 
+miny_hra
+=== FAZE HRACE ===
+Tah 1: odkryto [3,4], hodnota=2
+Tah 2: odkryto [5,7], hodnota=1
+Tah 3: odkryto [7,4], hodnota=0
+Tah 4: odkryto [2,7], hodnota=0
+Tah 5: odkryto [1,2], hodnota=0
+Tah 6: odkryto [8,8], hodnota=1
+Tah 7: odkryto [6,8], hodnota=1
+Tah 8: odkryta mina na [4,9]
+
+=== FAZE AGENTA ===
+Agent tah 1: nahodny start [9,5]
+{Operation terminated by user during <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('miny_agent', 'C:\cv07\hra1_miny\miny_agent.m', 76)" style="font-weight:bold">miny_agent</a> (<a href="matlab: opentoline('C:\cv07\hra1_miny\miny_agent.m',76,0)">line 76</a>)
+
+
+In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('miny_hra', 'C:\cv07\hra1_miny\miny_hra.m', 137)" style="font-weight:bold">miny_hra</a> (<a href="matlab: opentoline('C:\cv07\hra1_miny\miny_hra.m',137,0)">line 137</a>)
+    [bezpecna, miny_nalezene] = miny_agent(minyA);
+                                ^^^^^^^^^^^^^^^^^
+} 
+miny_hra
+=== FAZE HRACE ===
+Tah 1: odkryta mina na [4,6]
+
+=== FAZE AGENTA ===
+Agent tah 1: nahodny start [5,5]
+Agent tah 2: nahodny tah [9,3]
+Agent: oznacena mina [2,3]
+Agent: oznacena mina [5,4]
+Agent: oznacena mina [6,4]
+Agent tah 3: bezpecne [4,4]
+Agent tah 4: bezpecne [7,5]
+Agent: oznacena mina [3,4]
+Agent tah 5: bezpecne [2,2]
+Agent tah 6: bezpecne [2,4]
+Agent tah 7: bezpecne [6,6]
+Agent tah 8: bezpecne [8,6]
+Agent: oznacena mina [2,1]
+Agent: oznacena mina [4,5]
+Agent: oznacena mina [4,6]
+Agent: oznacena mina [8,5]
+Agent: oznacena mina [8,7]
+Agent tah 9: bezpecne [1,1]
+Agent tah 10: bezpecne [1,2]
+Agent tah 11: bezpecne [1,3]
+Agent tah 12: bezpecne [1,4]
+Agent tah 13: bezpecne [1,5]
+Agent tah 14: bezpecne [9,5]
+Agent tah 15: bezpecne [9,6]
+Agent tah 16: bezpecne [9,7]
+Agent: oznacena mina [2,8]
+Agent tah 17: bezpecne [1,8]
+Agent tah 18: bezpecne [2,9]
+Agent tah 19: bezpecne [1,9]
+
+============================================
+     POROVNANI: HRAC vs. AGENT
+============================================
+                  | Hrac   | Agent
+--------------------------------------------
+Pocet tahu        |      1 |     19
+Cas (s)           |   1.13 |  11.09
+Vysledek          | Prohra |  Vyhra
+Flood-fill odkryti|      0 |     71
+Vlajky spravne    |  0/10 | 10/10
+============================================
+=== FAZE HRACE ===
+Tah 1: odkryto [2,3], hodnota=1
+Tah 2: odkryto [5,8], hodnota=1
+Tah 3: odkryta mina na [6,4]
+
+=== FAZE AGENTA ===
+Agent tah 1: nahodny start [5,1]
+Agent tah 2: nahodny tah [1,6]
+Agent tah 3: nahodny tah [3,4]
+Agent: oznacena mina [1,5]
+Agent: oznacena mina [5,2]
+Agent: oznacena mina [5,9]
+Agent: oznacena mina [6,4]
+Agent: oznacena mina [7,5]
+Agent: oznacena mina [7,9]
+Agent tah 4: bezpecne [1,3]
+Agent tah 5: bezpecne [1,4]
+Agent tah 6: bezpecne [6,1]
+Agent tah 7: bezpecne [6,2]
+Agent tah 8: bezpecne [6,3]
+Agent tah 9: bezpecne [6,9]
+Agent: oznacena mina [1,2]
+Agent tah 10: bezpecne [1,1]
+Agent tah 11: bezpecne [7,1]
+Agent tah 12: bezpecne [7,2]
+Agent tah 13: bezpecne [7,3]
+Agent tah 14: bezpecne [7,4]
+Agent tah 15: bezpecne [8,3]
+Agent tah 16: bezpecne [8,4]
+Agent tah 17: bezpecne [8,5]
+Agent: oznacena mina [8,2]
+Agent tah 18: bezpecne [8,1]
+Agent tah 19: bezpecne [8,6]
+Agent tah 20: bezpecne [8,8]
+Agent tah 21: bezpecne [9,2]
+Agent tah 22: bezpecne [9,3]
+Agent tah 23: bezpecne [9,4]
+Agent: oznacena mina [8,7]
+Agent tah 24: bezpecne [8,9]
+Agent tah 25: bezpecne [9,1]
+Agent tah 26: bezpecne [9,7]
+Agent: oznacena mina [9,8]
+Agent tah 27: bezpecne [9,9]
+
+============================================
+     POROVNANI: HRAC vs. AGENT
+============================================
+                  | Hrac   | Agent
+--------------------------------------------
+Pocet tahu        |      3 |     27
+Cas (s)           |   3.71 |  20.63
+Vysledek          | Prohra |  Vyhra
+Flood-fill odkryti|      2 |     71
+Vlajky spravne    |  0/10 | 10/10
+============================================
+=== FAZE HRACE ===
+Tah 1: odkryto [2,3], hodnota=1
+Tah 2: odkryto [5,2], hodnota=1
+Tah 3: odkryto [3,8], hodnota=2
+Tah 4: odkryto [2,6], hodnota=3
+Tah 5: odkryto [4,5], hodnota=3
+Tah 6: odkryto [7,3], hodnota=0
+Tah 7: odkryto [2,4], hodnota=2
+Tah 8: odkryto [1,2], hodnota=1
+Tah 9: odkryto [3,2], hodnota=1
+Tah 10: odkryta mina na [2,8]
+
+=== FAZE AGENTA ===
+Agent tah 1: nahodny start [8,4]
+Agent: oznacena mina [2,8]
+Agent: oznacena mina [2,9]
+Agent: oznacena mina [3,6]
+Agent: oznacena mina [5,4]
+Agent: oznacena mina [5,5]
+Agent: oznacena mina [9,6]
+Agent tah 2: bezpecne [2,7]
+Agent tah 3: bezpecne [4,3]
+Agent tah 4: bezpecne [4,5]
+Agent tah 5: bezpecne [2,6]
+Agent tah 6: bezpecne [3,2]
+Agent tah 7: bezpecne [3,3]
+Agent tah 8: bezpecne [3,4]
+Agent: oznacena mina [4,2]
+Agent tah 9: bezpecne [2,1]
+Agent tah 10: bezpecne [4,1]
+Agent: oznacena mina [1,3]
+Agent: oznacena mina [1,5]
+Agent tah 11: bezpecne [1,4]
+Agent: oznacena mina [1,7]
+Agent tah 12: bezpecne [1,6]
+Agent tah 13: bezpecne [1,8]
+Agent tah 14: bezpecne [1,9]
+
+============================================
+     POROVNANI: HRAC vs. AGENT
+============================================
+                  | Hrac   | Agent
+--------------------------------------------
+Pocet tahu        |     10 |     14
+Cas (s)           |  16.27 |  10.06
+Vysledek          | Prohra |  Vyhra
+Flood-fill odkryti|     55 |     71
+Vlajky spravne    |  0/10 | 10/10
+============================================

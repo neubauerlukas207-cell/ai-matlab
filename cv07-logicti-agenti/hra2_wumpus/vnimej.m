@@ -1,27 +1,40 @@
-function percept = vnimej(svet, pozice)                         % vrati percepce na aktualni pozici agenta
-i = pozice(1);                                                 % radek aktualni pozice
-j = pozice(2);                                                 % sloupec aktualni pozice
-N = svet.N;                                                    % rozmer mrizky
+function percept = vnimej(svet, pozice)
+% vnimej - vrati percepce agenta na aktualni pozici
+% Vstup:  svet    - struktura sveta
+%         pozice  - [i, j] aktualni pozice
+% Vystup: percept - struktura:
+%           .zapach - true pokud Wumpus sousedi s pozici (4 smery)
+%           .vanek  - true pokud jama sousedi s pozici (4 smery)
+%           .lesk   - true pokud zlato lezi na pozici
+%           .naraz  - false (neni pouzito v tomto rezimu)
 
-percept.zapach = false;                                        % vychozi hodnota: zadny zapach
-percept.vanek = false;                                         % vychozi hodnota: zadny vanek
-percept.lesk = isequal(pozice, svet.zlato_pozice) && ~svet.zlato_vzato; % lesk je true, pokud stojime na zlate a jeste jsme ho nevzali
-percept.naraz = false;                                         % naraz tady nepouzivame, ale nechavame ho kvuli zadani
+i = pozice(1);
+j = pozice(2);
+N = svet.N;
 
-dirs = [-1 0; 1 0; 0 -1; 0 1];                                 % 4-směrní sousedi: nahoru, dolu, doleva, doprava
+percept.zapach = false;
+percept.vanek  = false;
+percept.lesk   = isequal(pozice, svet.zlato_pozice) && ~svet.zlato_vzato;
+percept.naraz  = false;
 
-for k = 1:4                                                    % projdeme vsechny 4 sousedy
-    ni = i + dirs(k,1);                                        % radek souseda
-    nj = j + dirs(k,2);                                        % sloupec souseda
+dirs = [-1 0; 1 0; 0 -1; 0 1];      % 4 sousede
 
-    if ni >= 1 && ni <= N && nj >= 1 && nj <= N                % kontrola, ze soused lezi uvnitr mrizky
-        if isequal([ni nj], svet.wumpus_pozice) && svet.wumpus_ziv % pokud je na sousednim poli Wumpus
-            percept.zapach = true;                             % nastavime zapach na true
-        end                                                    % konec kontroly Wumpuse
+for k = 1:4
+    ni = i + dirs(k, 1);
+    nj = j + dirs(k, 2);
 
-        if svet.jamy(ni,nj)                                    % pokud je na sousednim poli jama
-            percept.vanek = true;                              % nastavime vanek na true
-        end                                                    % konec kontroly jamy
-    end                                                        % konec kontroly hranic
-end                                                            % konec cyklu pres sousedy
-end                                                            % konec funkce
+    if ni < 1 || ni > N || nj < 1 || nj > N
+        continue;                    % mimo mrizku
+    end
+
+    % Wumpus je zivy a sousedi s aktualni pozici?
+    if svet.wumpus_ziv && isequal([ni nj], svet.wumpus_pozice)
+        percept.zapach = true;
+    end
+
+    % jama sousedi s aktualni pozici?
+    if svet.jamy(ni, nj)
+        percept.vanek = true;
+    end
+end
+end

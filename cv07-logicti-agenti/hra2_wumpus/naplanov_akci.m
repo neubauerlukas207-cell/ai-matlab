@@ -1,126 +1,175 @@
-function akce = naplanov_akci(svet, kb, percept)               % naplanuje dalsi akci agenta
-if percept.lesk                                                % pokud agent vidi lesk
-    akce = 'VZIT_ZLATO';                                       % ma sebrat zlato
-    return;                                                    % a koncime planovani
-end                                                            % konec podminky lesku
+function akce = naplanov_akci(svet, kb, percept)
+% naplanov_akci - naplanuje dalsi akci agenta
+% Vstup:  svet    - aktualni stav sveta
+%         kb      - baze znalosti
+%         percept - aktualni percepce
+% Vystup: akce    - string: 'DOPREDU'|'VLEVO'|'VPRAVO'|'VZIT_ZLATO'|'KONEC'
+%         (interně vraci cell array kroku pro provedeni cesty)
 
-N = size(kb.bezpecna, 1);                                      % velikost mrizky
-start = svet.agent_pozice;                                     % aktualni pozice agenta
+% 1. Pokud lesk -> sebrat zlato
+if percept.lesk
+    akce = 'VZIT_ZLATO';
+    return;
+end
 
-if svet.zlato_vzato                                            % pokud agent uz ma zlato
-    akce = bfs_cesta(start, [1 1], kb.bezpecna, N);            % najdeme cestu zpet na start
-    if isempty(akce)                                           % pokud zadna cesta neni
-        akce = 'KONEC';                                        % vratime konec
-    end                                                        % konec kontroly prazdne cesty
-    return;                                                    % koncime funkci
-end                                                            % konec vetve pro navrat se zlatem
+N     = size(kb.bezpecna, 1);
+start = svet.agent_pozice;
 
-queue = start;                                                 % fronta pro BFS zacina aktualni pozici
-visited = false(N);                                            % matice navstivenych poli v BFS
-visited(start(1), start(2)) = true;                            % start oznacime jako navstiveny
-parent = cell(N);                                              % sem budeme ukladat predchudce pro rekonstrukci cesty
+% 2. Pokud uz ma zlato -> jdi zpet na [1,1]
+if svet.zlato_vzato
+    akce = bfs_cesta(start, [1 1], kb.bezpecna | kb.navstivena, N);
+    if isempty(akce)
+        akce = 'KONEC';
+    end
+    return;
+end
 
-cil = [];                                                      % zatim nemame zadny cil
+% 3. Najdi nejblizsi bezpecne NENAVSTIVENE pole pomoci BFS
+% prochazime jen pres bezpecna pole
+queue   = start;
+visited = false(N);
+visited(start(1), start(2)) = true;
+parent  = cell(N);
+cil     = [];
 
-while ~isempty(queue)                                          % dokud neni BFS fronta prazdna
-    cur = queue(1,:);                                          % vezmeme prvni pole z fronty
-    queue(1,:) = [];                                           % odebereme ho z fronty
+while ~isempty(queue)
+    cur      = queue(1, :);
+    queue(1, :) = [];
 
-    if kb.bezpecna(cur(1), cur(2)) && ~kb.navstivena(cur(1), cur(2)) % pokud je to bezpecne a zaroven jeste nenavstivene pole
-        cil = cur;                                             % nasli jsme cil
-        break;                                                 % ukoncime BFS
-    end                                                        % konec kontroly ciloveho pole
+    % je cil: bezpecne a nenavstivene
+    if kb.bezpecna(cur(1), cur(2)) && ~kb.navstivena(cur(1), cur(2))
+        cil = cur;
+        break;
+    end
 
-    sous = sousede4(cur, N);                                   % zjistime 4 sousedy aktualniho pole
-    for k = 1:size(sous,1)                                     % projdeme sousedy
-        n = sous(k,:);                                         % konkretni soused
-        if ~visited(n(1), n(2)) && kb.bezpecna(n(1), n(2))     % pokud soused jeste nebyl navstiven a je bezpecny
-            visited(n(1), n(2)) = true;                        % oznacime ho jako navstiveny
-            parent{n(1), n(2)} = cur;                          % ulozime predchudce pro rekonstrukci cesty
-            queue(end+1,:) = n;                                % pridame souseda do fronty
-        end                                                    % konec podminky pro pridani souseda
-    end                                                        % konec cyklu sousedu
-end                                                            % konec BFS smycky
+    sous = sousede4(cur, N);
+    for k = 1:size(sous, 1)
+        n = sous(k, :);
+        if ~visited(n(1), n(2)) && kb.bezpecna(n(1), n(2))
+            visited(n(1), n(2))    = true;
+            parent{n(1), n(2)}     = cur;
+            queue(end+1, :)        = n; %#ok<AGROW>
+        end
+    end
+end
 
-if isempty(cil)                                                % pokud jsme nenasli zadny bezpecny nenavstiveny cil
-    akce = 'KONEC';                                            % agent se zasekl
-else                                                           % jinak
-    akce = rekonstruuj_cestu(start, cil, parent);              % zrekonstruujeme cestu od startu do cile
-end                                                            % konec rozhodnuti
-end                                                            % konec hlavni funkce
+if isempty(cil)
+    % Zadne bezpecne nenavstivene pole - pokus se jit na nejblizsi nenavstivene
+    % (rizikovy tah - agent musi riskovat)
+    cil2 = najdi_nenavstivene_bezpecnou_cestou(start, kb, N);
+    if isempty(cil2)
+        akce = 'KONEC';
+    else
+        akce = bfs_cesta(start, cil2, true(N), N); % pres libovolne pole
+        if isempty(akce)
+            akce = 'KONEC';
+        end
+    end
+else
+    akce = rekonstruuj_cestu(start, cil, parent);
+    if isempty(akce)
+        akce = 'KONEC';
+    end
+end
+end
 
-function sous = sousede4(p, N)                                 % pomocna funkce vrati 4 sousedy pole
-i = p(1);                                                      % radek pole
-j = p(2);                                                      % sloupec pole
+% ===== pomocne funkce =====
 
-cand = [i-1 j;                                                 % kandidat nahoru
-        i+1 j;                                                 % kandidat dolu
-        i j-1;                                                 % kandidat doleva
-        i j+1];                                                % kandidat doprava
+function sous = sousede4(p, N)
+% vrati 4 sousedy pole p v mezich NxN
+i    = p(1);
+j    = p(2);
+cand = [i-1 j; i+1 j; i j-1; i j+1];
+sous = [];
+for t = 1:4
+    if cand(t,1) >= 1 && cand(t,1) <= N && cand(t,2) >= 1 && cand(t,2) <= N
+        sous(end+1, :) = cand(t, :); %#ok<AGROW>
+    end
+end
+end
 
-sous = [];                                                     % prazdne pole pro platne sousedy
-for t = 1:4                                                    % projdeme vsechny 4 kandidaty
-    if cand(t,1) >= 1 && cand(t,1) <= N && cand(t,2) >= 1 && cand(t,2) <= N % pokud lezi uvnitr mrizky
-        sous(end+1,:) = cand(t,:);                             % pridame ho mezi platne sousedy
-    end                                                        % konec kontroly hranic
-end                                                            % konec cyklu pres kandidaty
-end                                                            % konec pomocne funkce
+function kroky = bfs_cesta(start, cil, pruchozi, N)
+% BFS - najde cestu ze start do cil pres pole kde pruchozi==true
+queue   = start;
+visited = false(N);
+visited(start(1), start(2)) = true;
+parent  = cell(N);
+nalezeno = false;
 
-function kroky = bfs_cesta(start, cil, safe, N)                % pomocna BFS funkce najde cestu mezi dvema poli
-queue = start;                                                 % fronta zacina startem
-visited = false(N);                                            % matice navstivenych poli
-visited(start(1), start(2)) = true;                            % start oznacime jako navstiveny
-parent = cell(N);                                              % predchudci pro rekonstrukci
-nalezeno = false;                                              % zatim jsme cil nenasli
+while ~isempty(queue)
+    cur = queue(1, :);
+    queue(1, :) = [];
 
-while ~isempty(queue)                                          % dokud je co prohledavat
-    cur = queue(1,:);                                          % vezmeme prvni pole z fronty
-    queue(1,:) = [];                                           % odebereme ho
+    if isequal(cur, cil)
+        nalezeno = true;
+        break;
+    end
 
-    if isequal(cur, cil)                                       % pokud jsme na cili
-        nalezeno = true;                                       % oznacime nalezeni
-        break;                                                 % ukoncime BFS
-    end                                                        % konec kontroly cile
+    sous = sousede4(cur, N);
+    for k = 1:size(sous, 1)
+        n = sous(k, :);
+        if ~visited(n(1), n(2)) && pruchozi(n(1), n(2))
+            visited(n(1), n(2)) = true;
+            parent{n(1), n(2)} = cur;
+            queue(end+1, :)    = n; %#ok<AGROW>
+        end
+    end
+end
 
-    sous = sousede4(cur, N);                                   % sousedi aktualniho pole
-    for k = 1:size(sous,1)                                     % projdeme sousedy
-        n = sous(k,:);                                         % konkretni soused
-        if ~visited(n(1), n(2)) && safe(n(1), n(2))            % pokud neni navstiven a je bezpecny
-            visited(n(1), n(2)) = true;                        % oznacime ho jako navstiveny
-            parent{n(1), n(2)} = cur;                          % ulozime predchudce
-            queue(end+1,:) = n;                                % a dame ho do fronty
-        end                                                    % konec podminky pro pridani
-    end                                                        % konec cyklu sousedu
-end                                                            % konec BFS
+if ~nalezeno
+    kroky = [];
+else
+    kroky = rekonstruuj_cestu(start, cil, parent);
+end
+end
 
-if ~nalezeno                                                   % pokud jsme cil nenasli
-    kroky = [];                                                % vratime prazdnou cestu
-else                                                           % jinak
-    kroky = rekonstruuj_cestu(start, cil, parent);             % slozime cestu
-end                                                            % konec rozhodnuti
-end                                                            % konec funkce bfs_cesta
+function kroky = rekonstruuj_cestu(start, cil, parent)
+% slozi seznam kroku z BFS predchudcu
+path = cil;
+while ~isequal(path(1, :), start)
+    pred = parent{path(1,1), path(1,2)};
+    if isempty(pred)
+        kroky = {};
+        return;
+    end
+    path = [pred; path]; %#ok<AGROW>
+end
 
-function kroky = rekonstruuj_cestu(start, cil, parent)         % pomocna funkce slozi seznam kroku z BFS predchudcu
-path = cil;                                                    % zacneme od cile
+kroky = {};
+for idx = 1:size(path, 1)-1
+    a = path(idx, :);
+    b = path(idx+1, :);
+    if     b(1) == a(1)-1,  kroky{end+1} = 'NAHORU';  %#ok<AGROW>
+    elseif b(1) == a(1)+1,  kroky{end+1} = 'DOLU';    %#ok<AGROW>
+    elseif b(2) == a(2)-1,  kroky{end+1} = 'DOLEVA';  %#ok<AGROW>
+    elseif b(2) == a(2)+1,  kroky{end+1} = 'DOPRAVA'; %#ok<AGROW>
+    end
+end
+end
 
-while ~isequal(path(1,:), start)                               % dokud prvni prvek cesty neni start
-    pred = parent{path(1,1), path(1,2)};                       % najdeme predchudce prvniho prvku
-    path = [pred; path];                                       % pridame predchudce na zacatek cesty
-end                                                            % konec skladani cesty
+function cil = najdi_nenavstivene_bezpecnou_cestou(start, kb, N)
+% najde nejblizsi nenavstivene pole dostupne z aktualniho startu
+queue   = start;
+visited = false(N);
+visited(start(1), start(2)) = true;
+cil = [];
 
-kroky = {};                                                    % sem ulozime slovni kroky
-for i = 1:size(path,1)-1                                       % projdeme dvojice po sobe jdoucich poli
-    a = path(i,:);                                             % aktualni pole
-    b = path(i+1,:);                                           % dalsi pole
+while ~isempty(queue)
+    cur = queue(1, :);
+    queue(1, :) = [];
 
-    if b(1) == a(1)-1                                          % pokud se radek snizil o 1
-        kroky{end+1} = 'NAHORU';                               % krok je nahoru
-    elseif b(1) == a(1)+1                                      % pokud se radek zvysil o 1
-        kroky{end+1} = 'DOLU';                                 % krok je dolu
-    elseif b(2) == a(2)-1                                      % pokud se sloupec snizil o 1
-        kroky{end+1} = 'DOLEVA';                               % krok je doleva
-    elseif b(2) == a(2)+1                                      % pokud se sloupec zvysil o 1
-        kroky{end+1} = 'DOPRAVA';                              % krok je doprava
-    end                                                        % konec rozliseni smeru
-end                                                            % konec cyklu pres cestu
-end                                                            % konec funkce rekonstruuj_cestu
+    if ~kb.navstivena(cur(1), cur(2))
+        cil = cur;
+        return;
+    end
+
+    sous = sousede4(cur, N);
+    for k = 1:size(sous, 1)
+        n = sous(k, :);
+        if ~visited(n(1), n(2))
+            visited(n(1), n(2)) = true;
+            queue(end+1, :)     = n; %#ok<AGROW>
+        end
+    end
+end
+end

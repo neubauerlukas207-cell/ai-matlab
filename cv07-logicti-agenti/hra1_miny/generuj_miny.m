@@ -1,16 +1,18 @@
-function miny = generuj_miny(N,M,pocet_min)
+function miny = generuj_miny(N, M, pocet_min)
+% generuj_miny - vygeneruje minove pole NxM s danym poctem min
+
 miny.N = N;
 miny.M = M;
-miny.pole = zeros(N,M);
-miny.odkryto = false(N,M);
-miny.vlajky = false(N,M);
+miny.pole = zeros(N, M);
+miny.odkryto = false(N, M);
+miny.vlajky = false(N, M);
 
-idx = randperm(N*M, pocet_min);
+idx = randperm(N * M, pocet_min);
 miny.pole(idx) = -1;
 
 for i = 1:N
     for j = 1:M
-        if miny.pole(i,j) == -1
+        if miny.pole(i, j) == -1
             continue;
         end
 
@@ -23,13 +25,13 @@ for i = 1:N
                 ni = i + di;
                 nj = j + dj;
                 if ni >= 1 && ni <= N && nj >= 1 && nj <= M
-                    if miny.pole(ni,nj) == -1
+                    if miny.pole(ni, nj) == -1
                         c = c + 1;
                     end
                 end
             end
         end
-        miny.pole(i,j) = c;
+        miny.pole(i, j) = c;
     end
 end
 end
