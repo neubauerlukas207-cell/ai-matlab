@@ -1,0 +1,35 @@
+=== RUCNI VYPOCET XOR SITE S PRAHOVOU FUNKCI ===
+
+Architektura:
+  Skryty neuron H:  vahy [0.3, 0.3], prah 0.5
+  Vystupni neuron O: vahy [0.3, 0.3, -0.6], prah 0.2
+
+--- Vstup (0, 0) --- ocekavano: 0 ---
+s_h = 0*0.3 + 0*0.3 = 0.0
+s_h - prah = 0.0 - 0.5 = -0.5  =>  h = step(-0.5) = 0
+s_o = 0*0.3 + 0*0.3 + 0*(-0.6) = 0.0
+s_o - prah = 0.0 - 0.2 = -0.2  =>  y = step(-0.2) = 0
+Vysledek: y = 0, ocekavano = 0 --> SPRAVNE
+
+--- Vstup (0, 1) --- ocekavano: 1 ---
+s_h = 0*0.3 + 1*0.3 = 0.3
+s_h - prah = 0.3 - 0.5 = -0.2  =>  h = step(-0.2) = 0
+s_o = 0*0.3 + 1*0.3 + 0*(-0.6) = 0.3
+s_o - prah = 0.3 - 0.2 = 0.1   =>  y = step(0.1) = 1
+Vysledek: y = 1, ocekavano = 1 --> SPRAVNE
+
+--- Vstup (1, 0) --- ocekavano: 1 ---
+s_h = 1*0.3 + 0*0.3 = 0.3
+s_h - prah = 0.3 - 0.5 = -0.2  =>  h = step(-0.2) = 0
+s_o = 1*0.3 + 0*0.3 + 0*(-0.6) = 0.3
+s_o - prah = 0.3 - 0.2 = 0.1   =>  y = step(0.1) = 1
+Vysledek: y = 1, ocekavano = 1 --> SPRAVNE
+
+--- Vstup (1, 1) --- ocekavano: 0 ---
+s_h = 1*0.3 + 1*0.3 = 0.6
+s_h - prah = 0.6 - 0.5 = 0.1   =>  h = step(0.1) = 1
+s_o = 1*0.3 + 1*0.3 + 1*(-0.6) = 0.6 - 0.6 = 0.0
+s_o - prah = 0.0 - 0.2 = -0.2  =>  y = step(-0.2) = 0
+Vysledek: y = 0, ocekavano = 0 --> SPRAVNE
+
+Uspesnost: 4/4 (100%) -- sit spravne pocita XOR
