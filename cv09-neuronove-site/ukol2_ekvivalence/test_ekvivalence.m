@@ -1,53 +1,85 @@
-clc;
-clear;
+% Testovaci skript pro overeni naucene site pro EKVIVALENCI
+% Spusti uceni, otestuje sit a vykresli grafy
 
-if ~exist('vysledky', 'dir')
-    mkdir('vysledky');
-end
+% Spust uceni site (W, b, mse_history, epoch jsou dostupne v workspace)
+uceni_backprop;
 
-% nauceni site
-[W, b, errors] = uceni_backprop();
+fprintf('\n=== TEST SITE PRO EKVIVALENCI ===\n\n');
+fprintf('x1  x2 | vystup (y) | zaokrouhleno | ocekavano | spravne?\n');
+fprintf('------------------------------------------------------------\n');
 
+% Trenovaci data
 X = [0 0; 0 1; 1 0; 1 1];
 T = [1; 0; 0; 1];
 
-fprintf('\n=== TEST EKVIVALENCE ===\n');
-fprintf('x1 x2 | y | ocekavano\n');
+uspech = 0;
 
+% Otestuj vsechny 4 kombinace vstupu
 for i = 1:4
     x1 = X(i,1);
     x2 = X(i,2);
+    t  = T(i);
 
+    % Vypocitej vystup naucene site
     [y, ~, ~] = sit_ekvivalence(x1, x2, W, b);
 
-    fprintf('%d  %d  | %.3f | %d\n', x1, x2, y, T(i));
+    % Zaokrouhli vystup na 0 nebo 1
+    y_round = round(y);
+
+    % Porovnej s ocekavanym vystupem
+    ok = (y_round == t);
+    if ok
+        uspech = uspech + 1;
+        spravne = 'ANO';
+    else
+        spravne = 'NE';
+    end
+
+    fprintf(' %d   %d | %10.4f | %12d | %9d | %s\n', ...
+        x1, x2, y, y_round, t, spravne);
 end
 
-% =====================
-% GRAF UCENI
-% =====================
+fprintf('------------------------------------------------------------\n');
+fprintf('Uspesnost: %d/4 (%.0f%%)\n', uspech, uspech/4*100);
+
+% Vykresli graf prubeh uceni (MSE vs epochy)
 figure;
-plot(errors);
-xlabel('Epochy');
-ylabel('MSE');
-title('Prubeh uceni');
+plot(mse_history(1:epoch));
+xlabel('Epocha');
+ylabel('MSE (stredni kvadraticka chyba)');
+title('Prubeh uceni site pro EKVIVALENCI');
 grid on;
+saveas(gcf, 'prubeh_uceni.png');
+fprintf('\nGraf prubeh uceni ulozen jako prubeh_uceni.png\n');
 
-saveas(gcf, 'vysledky/prubeh_uceni.png');
+% Vykresli rozhodovaci hranici site
+figure;
 
-% =====================
-% ROZHODOVACI PLOCHA
-% =====================
-[x1g, x2g] = meshgrid(0:0.01:1, 0:0.01:1);
-yg = zeros(size(x1g));
+% Vytvor mrizku bodu 100x100 v rozsahu [-0.5, 1.5]
+[xx, yy] = meshgrid(linspace(-0.5, 1.5, 100), linspace(-0.5, 1.5, 100));
 
-for i = 1:numel(x1g)
-    [yg(i), ~, ~] = sit_ekvivalence(x1g(i), x2g(i), W, b);
+% Pro kazdy bod mrizky vypocitej vystup site
+zz = zeros(size(xx));
+for i = 1:numel(xx)
+    [zz(i), ~, ~] = sit_ekvivalence(xx(i), yy(i), W, b);
 end
 
-figure;
-contourf(x1g, x2g, yg, 20);
+% Zobraz rozhodovaci hranici jako barevnou mapu
+contourf(xx, yy, zz, 20);
 colorbar;
-title('Rozhodovaci plocha');
+hold on;
 
-saveas(gcf, 'vysledky/rozhodovaci_plocha.png');
+% Pridej trenovaci body -- kolecka pro tridu 1, krizky pro tridu 0
+for i = 1:4
+    if T(i) == 1
+        plot(X(i,1), X(i,2), 'wo', 'MarkerSize', 12, 'LineWidth', 2);
+    else
+        plot(X(i,1), X(i,2), 'wx', 'MarkerSize', 12, 'LineWidth', 2);
+    end
+end
+
+title('Rozhodovaci hranice site pro EKVIVALENCI');
+xlabel('x1');
+ylabel('x2');
+saveas(gcf, 'rozhodovaci_hranice.png');
+fprintf('Graf rozhodovaci hranice ulozen jako rozhodovaci_hranice.png\n');
