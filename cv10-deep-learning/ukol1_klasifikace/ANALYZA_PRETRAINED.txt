@@ -1,0 +1,43 @@
+Použil jsem síť SqueezeNet, protože je dostupná v MATLABu bez nutnosti instalace, je rychlá a má malý počet parametrů (cca 1,2 mil.).
+Vstupní rozměr sítě je 227 × 227 × 3.
+
+Testoval jsem celkem 10 obrázků různých objektů.
+
+Top-1 správně: 2 / 10
+Top-5 správně: 5 / 10
+
+Správně klasifikované obrázky:
+
+obr03 → wild boar (~86 %)
+obr04 → broom (~85 %)
+
+Částečně správné (správná třída v Top-5):
+
+obr06 → knee pad (~50 %)
+obr07 → can opener (~27 %)
+obr10 → cellular telephone (v Top-5)
+
+Špatně klasifikované obrázky:
+
+obr01 → abaya → objekt nebyl správně rozpoznán
+obr02 → rotisserie → zaměněno za jiný objekt
+obr05 → swimming trunks → špatná interpretace tvaru
+obr08 → knee pad → nízká pravděpodobnost, nejasný objekt
+obr09 → packet → objekt není v ImageNet nebo je podobný jiným třídám
+
+Důvody chyb:
+
+objekt není v datasetu ImageNet
+špatné nebo netypické pozadí
+podobnost objektů (např. nástroje, zařízení)
+nejasný tvar nebo malý objekt
+
+Průměrný čas klasifikace byl 0.1718 s na obrázek.
+První klasifikace byla pomalejší (~1.53 s) kvůli inicializaci sítě.
+Výpočty probíhaly na CPU (GPU jsem nepoužil).
+
+Síť fungovala hůře než v předchozím testu.
+Lépe funguje na jasné a typické objekty, hůře na méně běžné nebo nejasné případy.
+
+Překvapilo mě, že síť často přiřazovala úplně jiné objekty (např. oblečení místo jiného předmětu).
+Také se ukázalo, že pokud objekt není v ImageNet, výsledky jsou nepřesné.
