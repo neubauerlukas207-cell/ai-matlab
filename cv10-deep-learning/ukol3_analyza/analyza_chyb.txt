@@ -1,0 +1,84 @@
+ANALYZA CHYB - UKOL 3
+
+
+1. ROZLOZENI CHYB
+Celkovy pocet chybne klasifikovanych obrazku: 0 (z 18 testovacich)
+Presnost: 100 % - sit neudela zadnou chybu.
+
+Sit klasifikovala spravne vsechny tri tridy:
+  bryle:    6/6 (100 %)
+  kniha:    6/6 (100 %)
+  pomeranc: 6/6 (100 %)
+
+Protoze nedoslo k zadne chybe, analyza se zameruje na to, PROC sit fungovala
+tak dobre, a na potencialni scenare, kde by chyby nastat mohly.
+
+2. JISTOTA PREDIKCI
+
+Sit byla ve svych predikcich velmi jista. Top-1 skore pro spravnou tridu
+bylo ve vsech pripadech vysoke, coz odpovida tomu, ze tridy jsou si vizualne
+velmi odlisne:
+  - pomeranc: okrouhy tvar, oranzova barva, hruba textura
+  - bryle: cerveny ram, pruhledne cocky, specificka geometrie
+  - kniha: pravouhly tvar, pestrobarevna obalka s ilustracemi
+
+Vizualni odlisnost trid je pravdepodobne hlavni duvod, proc sit dosahla
+100% presnosti i s malym datasetem (30 obrazku/trida).
+
+3. CO MAJI OBRAZKY SPOLECNEHO (ANALYZA POTENCIALNICH CHYB)
+
+I kdyz k chybam nedoslo, lze identifikovat scenare, kde by sit mohla chybovat:
+
+a) Bryle - vsechny fotky jsou z podobneho uhlu (shora na stul). Pokud by
+   testovaci obrazek byl poricen z boku nebo by bryle byly prelozene, mohla
+   by sit mit problem s klasifikaci.
+
+b) Kniha - obalka knihy je velmi specificka (detske ilustrace, jasne barvy).
+   Jina kniha s tmavou nebo jednobarevnou obalkou by mohla byt obtiznejsi
+   pro spravnou klasifikaci.
+
+c) Pomeranc - kulavy tvar a oranzova barva jsou velmi charakteristicke.
+   Zameneni s jinou kulatou oranzovou vecí (napr. baseball) by bylo
+   teoreticky mozne, ale v ramci nasich trid k tomu duvod neni.
+
+4. MOZNE ZDROJE CHYB DO BUDOUCNA
+
+Kdybychom dataset rozsirili nebo zmenili podminky foceni, mohly by nastat:
+
+  - Spatne osvetleni: tmave nebo prepalesene fotky by snizily rozpoznatelnost
+  - Castecne zakryti objektu: sit se uci cele objekty, casti mohou zmast
+  - Podobne pozadi u vice trid: vsechny objekty byly foceny na drevenem stole,
+    sit se mohla naucit i pozadi jako priznak - to by byl problem pri
+    nasazeni na jinych pozadich
+  - Maly objekt v obrazku: pokud objekt zabira jen malou cast snimku,
+    sit ma mene informaci pro klasifikaci
+
+5. CO BYCHOM UDELALI PRO ZLEPSENI
+
+I pri 100% presnosti existuji zpusoby jak model zlepsit pro realne nasazeni:
+
+  a) Vice dat: 30 obrazku/trida je minimum. Se 100+ obrazky by model byl
+     robustnejsi vuci ruznym podminkam foceni.
+
+  b) Rozmanitejsi foceni: ruzna pozadi, osvetleni, uhly - ne jen na jednom
+     stole. To by zabranilo "nauceni se pozadi".
+
+  c) Specificka augmentace: pridat zmenu jasu (RandBrightness) a kontrastu
+     pro lepsi odolnost vuci ruznym svetelnym podminkam.
+
+  d) Obtiznejsi tridy: vybrat objekty, ktere jsou si vizualne podobnejsi
+     (napr. tri druhy ovoce misto bryle+kniha+pomeranc) - to by byl
+     realnejsi test schopnosti site.
+
+  e) Fine-tuning cele site: misto feature extractoru preucit celou sit
+     s malym learning rate - potencialne lepsi vysledky pro specializovane
+     domeny.
+
+6. ZAVER
+
+Klasifikator dosahl 100% presnosti na testovacim setu. Hlavnim duvodem
+tohoto vysledku je vizualni odlisnost vybranych trid (bryle, kniha, pomeranc),
+ktera siti umoznila naucit se jednoznacne rozlisovaci priznaky jiz z maleho
+poctu trenovacich obrazku. Transfer learning ze site SqueezeNet predtrenovane
+na ImageNet poskytl dobry zaklad vizualnich priznaku, ktere stacilo jen
+doladit pro nase tri tridy.

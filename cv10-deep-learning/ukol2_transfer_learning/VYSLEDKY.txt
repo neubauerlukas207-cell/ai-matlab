@@ -1,0 +1,73 @@
+INTERPRETACE VYSLEDKU - UKOL 2: Transfer Learning
+
+
+1. CELKOVA PRESNOST
+
+Presnost na testovacim setu: 100.00 % (18 / 18)
+Sit spravne klasifikovala vsechny testovaci obrazky bez jedine chyby.
+
+Hodnoceni: 100 % je vyborny vysledek. Orientacni stupnice dle zadani:
+  > 60 % = funkcni
+  > 80 % = dobry
+  > 90 % = velmi dobry
+  > 95 % = vyborny
+Dosazena presnost 100 % prekonava vsechny tyto hranice.
+
+2. PRESNOST PRO JEDNOTLIVE TRIDY
+
+  bryle   : 100.00 % (6/6)
+  kniha   : 100.00 % (6/6)
+  pomeranc: 100.00 % (6/6)
+
+Vsechny tri tridy byly klasifikovany bez chyby. Zadna trida nemela lepsi
+ani horsi vysledek - vsechny dosahly maxima.
+
+Mozny duvod takto dobreho vysledku: vybrane tridy (bryle, kniha, pomeranc)
+jsou si vizualne velmi odlisne - jina barva, tvar i textura. Sit nemela
+problem je od sebe odlisit.
+
+3. CAS TRENINKU A HARDWARE
+
+Cas treninku: 82.27 s (1.37 minuty)
+Hardware: CPU (GPU nebylo dostupne)
+Prumerny cas klasifikace: 0.1196 s/obrazek
+
+Trenink trval necelych 1.5 minuty, coz je rychle diky:
+  - Male velikosti site SqueezeNet (1.2 mil. parametru)
+  - Malemu datasetu (90 obrazku celkem, 72 trenovacich)
+  - Pristupu feature extractor - ucily se jen posledni vrstvy
+
+4. VLIV AUGMENTACE DAT
+
+Augmentace byla nastavena:
+  - Nahodna rotace: +/- 15 stupnu
+  - Zrcadleni vlevo-vpravo
+  - Horizontalni a vertikalni posun: +/- 10 px
+
+Pri tak malem datasetu (30 obrazku/trida) je augmentace dulezita - umetle
+zvetsuje pocet trenovacich vzorku a snizuje riziko pretrenovanosit.
+Vysledna 100% presnost naznacuje, ze augmentace pomohla siti generalizovat
+spravne i na testovaci data, ktera nebyla soucasti treninku.
+
+5. CHYBNE KLASIFIKACE
+
+Pocet spatne klasifikovanych obrazku: 0
+Sit neudela jedinou chybu na testovacim setu.
+Proto vizualizace chybnych klasifikaci nebyla vygenerovana.
+
+6. NAVRHY NA ZLEPSENI
+
+I kdyz bylo dosazeno 100 %, v realnem nasazeni by bylo vhodne:
+  a) Pridat vice obrazku (100+ na tridu) pro robustnejsi model
+  b) Testovat na obrazcich z jinych podminek (jine pozadi, osvetleni, uhel)
+  c) Zkusit fine-tuning cele site pro potencialne lepsi generalizaci
+  d) Pridat obtiznejsi tridy, ktere jsou si vizualne podobnejsi
+  e) Otestovat na siti ResNet-50 nebo GoogLeNet pro srovnani presnosti
+
+7. ZAVER
+
+Transfer learning pomoci SqueezeNet byl velmi uspesny. Sit predtrenovana na
+ImageNet (1000 trid, 1.2 mil. obrazku) byla uspesne prizpusobena na vlastni
+3-tridni klasifikaci s pouhou 90 obrazky za necelych 1.5 minuty na CPU.
+Dosazena presnost 100 % potvrzuje, ze transfer learning je efektivni pristup
+pro klasifikaci obrazu i pri malem vlastnim datasetu.
