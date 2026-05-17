@@ -1,0 +1,44 @@
+Souhrnna tabulka experimentu -- BFS vs DFS vs A*
+=================================================
+
+Experiment 01 -- Vliv hustoty prekazek (mrizka 20x20)
+Hustota     Del.BFS    Del.DFS     Del.A*   Pruchozi
+10             39.0      112.1       39.0        30/30
+20             39.2       78.3       39.2        25/30
+30             39.7       62.9       39.7        15/30
+40             42.0       52.0       42.0         2/30
+
+Experiment 02 -- Vliv velikosti mrizky (hustota 20 %)
+Velikost    Uzlu.BFS   Uzlu.DFS    Uzlu.A*   Del.BFS
+10x10          79.8       49.1       62.7      19.0
+20x20         322.0      175.3      231.7      39.0
+50x50        1999.1      595.1     1319.4      99.1
+100x100      7980.6     3263.8     5103.5     199.0
+
+Experiment 03 -- Heuristiky A* (mrizka 20x20, hustota 20 %)
+Heuristika         Uzlu  Del.cesty
+Manhattan         227.1      227.1
+Euclidean         274.2      274.2
+Chebyshev         274.8      274.8
+Nulova            318.2      318.2
+
+Experiment 04 -- Vliv vzdalenosti start--cil (mrizka 20x20, hustota 20 %)
+Konfigurace                    Del.BFS   Del.DFS    Del.A*  Uzlu.BFS  Uzlu.A*
+Rohy (max vzdalenost)             39.0     102.8      39.0     317.4    234.2
+Rohy (diagonala)                  39.0     126.5      39.0     317.4    234.8
+Stred--stred (vodorovne)          25.0      40.1      25.0     272.6     70.5
+
+Experiment 05 -- Pruchozost bludiste pri ruzne hustote (mrizka 20x20, 100 behu)
+Hustota (%)   Pruchozi    Pruchozost (%)
+5               99/100           99
+10              96/100           96
+15              88/100           88
+20              85/100           85
+25              68/100           68
+30              55/100           55
+35              22/100           22
+40              10/100           10
+45               1/100            1
+50               0/100            0
+Fazovy prechod (pokles pod 50 %): mezi 30 % a 35 % hustotou
+
